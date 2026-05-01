@@ -8,12 +8,17 @@ use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\WorkAssignmentController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/work-assignments/ongoing', [WorkAssignmentController::class, 'ongoing']);
+});
 
 Route::get('/cities/{province}', function ($provinceId) {
     return City::where('province_id', $provinceId)->get();

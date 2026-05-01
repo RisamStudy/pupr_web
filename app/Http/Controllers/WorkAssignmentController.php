@@ -157,7 +157,7 @@ class WorkAssignmentController extends Controller
         } catch (ValidationException $e) {
             return back()->withErrors($e->errors())->withInput();
         } catch (QueryException $e) {
-            return back()->withInput()->with('error', 'Failed to create user. Database error: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Failed to create work assignment. Database error: ' . $e->getMessage());
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'An unexpected error occurred: ' . $e->getMessage());
         }

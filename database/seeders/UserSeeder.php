@@ -45,22 +45,48 @@ class UserSeeder extends Seeder
                 default => 'helper',
             };
 
-            User::create([
-                'name' => $user['name'],
+            User::updateOrCreate([
                 'email' => $firstName . '@cimancis.com',
+            ], [
+                'name' => $user['name'],
                 'password' => Hash::make($firstName . '123'), // Password based on first name for simplicity
-                'role' => $role,
-                'type' => $user['type'],
+                'roles' => [$role],
+                'types' => [$user['type']],
                 'status' => 'tersedia',
             ]);
         }
 
-        // Add an admin user
-        User::create([
-            'name' => 'Admin Cimancis',
+        $defaultPassword = Hash::make('Cimancis1029!@');
+
+        // Add one ready-to-use account for each active role.
+        User::updateOrCreate([
             'email' => 'admin@cimancis.com',
-            'password' => Hash::make('Cimancis1029!@'), // Default admin password
-            'role' => 'admin'
+        ], [
+            'name' => 'Admin Cimancis',
+            'password' => $defaultPassword,
+            'roles' => ['admin'],
+            'types' => [],
+            'status' => 'tersedia',
+        ]);
+
+        User::updateOrCreate([
+            'email' => 'operator@cimancis.com',
+        ], [
+            'name' => 'Operator Cimancis',
+            'password' => $defaultPassword,
+            'roles' => ['operator'],
+            'types' => ['operator_alat_berat'],
+            'status' => 'tersedia',
+        ]);
+
+        User::updateOrCreate([
+            'email' => 'helper@cimancis.com',
+        ], [
+            'name' => 'Helper Cimancis',
+            'password' => $defaultPassword,
+            'roles' => ['helper'],
+            'types' => ['pembantu_operator'],
+            'status' => 'tersedia',
         ]);
     }
 }
