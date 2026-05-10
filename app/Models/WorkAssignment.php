@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Laravolt\Indonesia\Models\City;
 use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
@@ -39,9 +41,22 @@ class WorkAssignment extends Model
         'end_date' => 'date',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
-        'completion_date',
+        'completion_date' => 'datetime',
 
     ];
+
+    public static function completeExpiredAssignments(): int
+    {
+        $today = Carbon::today();
+
+        return static::query()
+            ->whereDate('end_date', '<', $today)
+            ->where('status', '!=', 'Selesai')
+            ->update([
+                'status' => 'Selesai',
+                'completion_date' => DB::raw('COALESCE(completion_date, end_date)'),
+            ]);
+    }
 
     public function heavyEquipment()
     {

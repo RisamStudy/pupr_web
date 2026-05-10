@@ -18,6 +18,8 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/work-assignments/ongoing', [WorkAssignmentController::class, 'ongoing']);
+    Route::get('/work-assignments/history', [WorkAssignmentController::class, 'history']);
+    Route::get('/work-assignments/history/{workAssignment}', [WorkAssignmentController::class, 'historyDetail']);
 });
 
 Route::get('/cities/{province}', function ($provinceId) {
