@@ -49,13 +49,31 @@ class WorkAssignment extends Model
     {
         $today = Carbon::today();
 
-        return static::query()
+        $expiredAssignmentIds = static::query()
             ->whereDate('end_date', '<', $today)
             ->where('status', '!=', 'Selesai')
-            ->update([
-                'status' => 'Selesai',
-                'completion_date' => DB::raw('COALESCE(completion_date, end_date)'),
-            ]);
+            ->pluck('id');
+
+        $updatedCount = 0;
+
+        if ($expiredAssignmentIds->isNotEmpty()) {
+            $updatedCount = static::query()
+                ->whereIn('id', $expiredAssignmentIds)
+                ->update([
+                    'status' => 'Selesai',
+                    'completion_date' => DB::raw('COALESCE(completion_date, end_date)'),
+                ]);
+        }
+
+        User::query()
+            ->where('status', 'bertugas')
+            ->whereHas('assignmentUsers')
+            ->whereDoesntHave('assignmentUsers.workAssignment', function ($query) {
+                $query->where('status', '!=', 'Selesai');
+            })
+            ->update(['status' => 'tersedia']);
+
+        return $updatedCount;
     }
 
     public function heavyEquipment()
