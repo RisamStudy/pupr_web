@@ -8,6 +8,7 @@ use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\WorkAssignmentController;
 
 Route::post('/login', [AuthController::class, 'login']);
@@ -17,6 +18,10 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/attendance/today', [AttendanceController::class, 'today']);
+    Route::post('/attendance/check-in', [AttendanceController::class, 'checkIn']);
+    Route::post('/attendance/check-out', [AttendanceController::class, 'checkOut']);
+
     Route::get('/work-assignments/ongoing', [WorkAssignmentController::class, 'ongoing']);
     Route::get('/work-assignments/history', [WorkAssignmentController::class, 'history']);
     Route::get('/work-assignments/history/{workAssignment}', [WorkAssignmentController::class, 'historyDetail']);
