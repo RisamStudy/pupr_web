@@ -203,12 +203,22 @@
                                     <div class="w-full h-64 mb-4">
                                         <canvas id="equipmentStatusChart"></canvas>
                                     </div>
+                                    @php
+                                        $equipmentTotal = $heavyEquipments->count();
+                                        $equipmentPercentage = fn ($count) => $equipmentTotal > 0
+                                            ? number_format($count / $equipmentTotal * 100, 1)
+                                            : number_format(0, 1);
+                                        $readyCount = $heavyEquipments->where('status', 'ready')->count();
+                                        $operatingCount = $heavyEquipments->where('status', 'beroperasi')->count();
+                                        $maintenanceCount = $heavyEquipments->where('status', 'maintenance')->count();
+                                        $damagedCount = $heavyEquipments->where('status', 'rusak')->count();
+                                    @endphp
                                     <div class="text-sm">
-                                        <p class="font-semibold">Total Alat Berat: {{ $heavyEquipments->count() }}</p>
-                                        <p>Ready: {{ $heavyEquipments->where('status', 'ready')->count() }} ({{ number_format($heavyEquipments->where('status', 'ready')->count() / $heavyEquipments->count() * 100, 1) }}%)</p>
-                                        <p>Beroperasi: {{ $heavyEquipments->where('status', 'beroperasi')->count() }} ({{ number_format($heavyEquipments->where('status', 'beroperasi')->count() / $heavyEquipments->count() * 100, 1) }}%)</p>
-                                        <p>Maintenance: {{ $heavyEquipments->where('status', 'maintenance')->count() }} ({{ number_format($heavyEquipments->where('status', 'maintenance')->count() / $heavyEquipments->count() * 100, 1) }}%)</p>
-                                        <p>Rusak: {{ $heavyEquipments->where('status', 'rusak')->count() }} ({{ number_format($heavyEquipments->where('status', 'rusak')->count() / $heavyEquipments->count() * 100, 1) }}%)</p>
+                                        <p class="font-semibold">Total Alat Berat: {{ $equipmentTotal }}</p>
+                                        <p>Ready: {{ $readyCount }} ({{ $equipmentPercentage($readyCount) }}%)</p>
+                                        <p>Beroperasi: {{ $operatingCount }} ({{ $equipmentPercentage($operatingCount) }}%)</p>
+                                        <p>Maintenance: {{ $maintenanceCount }} ({{ $equipmentPercentage($maintenanceCount) }}%)</p>
+                                        <p>Rusak: {{ $damagedCount }} ({{ $equipmentPercentage($damagedCount) }}%)</p>
                                     </div>
                                 </div>
                             </div>
@@ -784,7 +794,7 @@
                                 var label = context.label || '';
                                 var value = context.parsed || 0;
                                 var total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                var percentage = Math.round((value / total) * 100);
+                                var percentage = total > 0 ? Math.round((value / total) * 100) : 0;
                                 return `${label}: ${value} (${percentage}%)`;
                             }
                         }
