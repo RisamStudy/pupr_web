@@ -75,12 +75,14 @@ class GuestController extends Controller
                     'heavy_equipment' => [
                         'nomor_lambung' => $project->heavyEquipment->nomor_lambung ?? 'N/A'
                     ],
-                    'operators' => $project->assignmentUsers->where('role', 'operator')->map(function ($au) {
-                        return $au->user->name;
-                    }),
-                    'helpers' => $project->assignmentUsers->where('role', 'helper')->map(function ($au) {
-                        return $au->user->name;
-                    })
+                    'operators' => $project->assignmentUsers->where('role', 'operator')
+                        ->map(fn ($au) => $au->user?->name)
+                        ->filter()
+                        ->values(),
+                    'helpers' => $project->assignmentUsers->where('role', 'helper')
+                        ->map(fn ($au) => $au->user?->name)
+                        ->filter()
+                        ->values()
                 ];
             });
 
@@ -103,12 +105,14 @@ class GuestController extends Controller
                     'heavy_equipment' => [
                         'nomor_lambung' => $project->heavyEquipment->nomor_lambung ?? 'N/A'
                     ],
-                    'operators' => $project->assignmentUsers->where('role', 'operator')->map(function ($au) {
-                        return $au->user->name;
-                    }),
-                    'helpers' => $project->assignmentUsers->where('role', 'helper')->map(function ($au) {
-                        return $au->user->name;
-                    })
+                    'operators' => $project->assignmentUsers->where('role', 'operator')
+                        ->map(fn ($au) => $au->user?->name)
+                        ->filter()
+                        ->values(),
+                    'helpers' => $project->assignmentUsers->where('role', 'helper')
+                        ->map(fn ($au) => $au->user?->name)
+                        ->filter()
+                        ->values()
                 ];
             });
 

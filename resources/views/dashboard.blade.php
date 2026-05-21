@@ -143,7 +143,7 @@
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <div class="space-y-1">
-                                                        @foreach($project->assignmentUsers->where('role', 'operator') as $operator)
+                                                        @foreach($project->assignmentUsers->where('role', 'operator')->filter(fn ($operator) => $operator->user) as $operator)
                                                             <div class="flex items-center">
                                                                 <div class="flex-shrink-0 h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                                                                     <span class="text-sm font-medium text-blue-800">
@@ -159,7 +159,7 @@
                                                 </td>
                                                 <td class="px-6 py-4">
                                                     <div class="space-y-1">
-                                                        @foreach($project->assignmentUsers->where('role', 'helper') as $helper)
+                                                        @foreach($project->assignmentUsers->where('role', 'helper')->filter(fn ($helper) => $helper->user) as $helper)
                                                             <div class="flex items-center">
                                                                 <div class="flex-shrink-0 h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
                                                                     <span class="text-sm font-medium text-purple-800">
@@ -192,13 +192,22 @@
                                     <div class="w-full h-64 mb-4">
                                         <canvas id="equipmentStatusChart"></canvas>
                                     </div>
+                                    @php
+                                        $equipmentTotal = $heavyEquipments->count();
+                                        $equipmentPercent = fn ($count) => $equipmentTotal > 0 ? number_format($count / $equipmentTotal * 100, 1) : '0.0';
+                                        $readyCount = $heavyEquipments->where('status', 'ready')->count();
+                                        $operatingCount = $heavyEquipments->where('status', 'beroperasi')->count();
+                                        $maintenanceCount = $heavyEquipments->where('status', 'maintenance')->count();
+                                        $rusakCount = $heavyEquipments->where('status', 'rusak')->count();
+                                        $tidakAdaCount = $heavyEquipments->where('status', 'tidak ada')->count();
+                                    @endphp
                                     <div class="text-sm">
-                                        <p class="font-semibold">Total Alat Berat: {{ $heavyEquipments->count() }}</p>
-                                        <p>Ready: {{ $heavyEquipments->where('status', 'ready')->count() }} ({{ number_format($heavyEquipments->where('status', 'ready')->count() / $heavyEquipments->count() * 100, 1) }}%)</p>
-                                        <p>Beroperasi: {{ $heavyEquipments->where('status', 'beroperasi')->count() }} ({{ number_format($heavyEquipments->where('status', 'beroperasi')->count() / $heavyEquipments->count() * 100, 1) }}%)</p>
-                                        <p>Maintenance: {{ $heavyEquipments->where('status', 'maintenance')->count() }} ({{ number_format($heavyEquipments->where('status', 'maintenance')->count() / $heavyEquipments->count() * 100, 1) }}%)</p>
-                                        <p>Rusak: {{ $heavyEquipments->where('status', 'rusak')->count() }} ({{ number_format($heavyEquipments->where('status', 'rusak')->count() / $heavyEquipments->count() * 100, 1) }}%)</p>
-                                        <p>Tidak ada: {{ $heavyEquipments->where('status', 'tidak ada')->count() }} ({{ number_format($heavyEquipments->where('status', 'tidak ada')->count() / $heavyEquipments->count() * 100, 1) }}%)</p>
+                                        <p class="font-semibold">Total Alat Berat: {{ $equipmentTotal }}</p>
+                                        <p>Ready: {{ $readyCount }} ({{ $equipmentPercent($readyCount) }}%)</p>
+                                        <p>Beroperasi: {{ $operatingCount }} ({{ $equipmentPercent($operatingCount) }}%)</p>
+                                        <p>Maintenance: {{ $maintenanceCount }} ({{ $equipmentPercent($maintenanceCount) }}%)</p>
+                                        <p>Rusak: {{ $rusakCount }} ({{ $equipmentPercent($rusakCount) }}%)</p>
+                                        <p>Tidak ada: {{ $tidakAdaCount }} ({{ $equipmentPercent($tidakAdaCount) }}%)</p>
                                     </div>
                                 </div>
                             </div>
@@ -695,7 +704,7 @@
                                     var label = context.label || '';
                                     var value = context.parsed || 0;
                                     var total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    var percentage = Math.round((value / total) * 100);
+                                    var percentage = total > 0 ? Math.round((value / total) * 100) : 0;
                                     return `${label}: ${value} (${percentage}%)`;
                                 }
                             }
