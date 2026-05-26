@@ -22,6 +22,7 @@ class WorkAssignmentController extends Controller
             'fieldConditionPhotos' => fn ($query) => $query->latest()->limit(1),
         ])
             ->where('status', 'Sedang Berlangsung')
+            ->whereHas('assignmentUsers', fn ($query) => $query->where('user_id', $request->user()->id))
             ->latest();
 
         if ($request->filled('year')) {
